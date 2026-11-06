@@ -1,4 +1,6 @@
+import { sendOtpEmail } from "../helpers/emailer.js";
 import { getData, setData } from "../helpers/fileData.js";
+
 class UserControllers {
     async getAll(req, res) {
         try {
@@ -40,10 +42,13 @@ class UserControllers {
     async creat(req, res) {
         const users = await getData('users.json')
 
+        const {email,name}= req.body
+
         const newUser = {
             id: users.length ? users.at(-1).id + 1 : 1,
             ...req.body
         }
+        await sendOtpEmail(email,name)
         users.push(newUser)
         await setData('users.json',users)
         return res.status(201).json({
